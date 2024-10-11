@@ -1,10 +1,8 @@
 
-
-
-
-
 import { useState, useEffect } from "react";
 
+
+// fixed the types issue in product
 interface Product {
   id: number;
   title: string;

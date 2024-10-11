@@ -25,7 +25,7 @@ export default function CartPage() {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
   };
-
+// fixed handlesubmitproblem
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     // Handle submission logic here (e.g., API call)
