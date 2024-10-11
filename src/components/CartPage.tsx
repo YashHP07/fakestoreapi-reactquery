@@ -1,5 +1,5 @@
 // src/components/CartPage.tsx
-
+import { ChangeEvent } from "react";
 import { useCart } from "../hooks/useCart";
 import CartItem from "./CartItem";
 import { useState } from "react";
@@ -14,12 +14,19 @@ export default function CartPage() {
     paymentMethod: "Credit Card",
   });
 
-  const handleInputChange = (e) => {
+  // const handleInputChange = (e) => {
+  //   const { name, value } = e.target;
+  //   setFormData({ ...formData, [name]: value });
+  // };
+
+  const handleInputChange = (
+    e: ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  ) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     // Handle submission logic here (e.g., API call)
     alert("Thank you for your purchase!");

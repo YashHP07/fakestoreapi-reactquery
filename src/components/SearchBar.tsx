@@ -1,5 +1,15 @@
-"use client";
+
+
+
+
+
 import { useState, useEffect } from "react";
+
+interface Product {
+  id: number;
+  title: string;
+  price: number;
+}
 
 interface SearchBarProps {
   onSearch: (query: string) => void;
@@ -7,7 +17,7 @@ interface SearchBarProps {
 
 export default function SearchBar({ onSearch }: SearchBarProps) {
   const [query, setQuery] = useState("");
-  const [products, setProducts] = useState([]);
+  const [products, setProducts] = useState<Product[]>([]); // Explicitly typing the state
 
   const handleSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
     const value = event.target.value;
@@ -28,7 +38,7 @@ export default function SearchBar({ onSearch }: SearchBarProps) {
         const response = await fetch(`https://fakestoreapi.com/products`);
         const data = await response.json();
         // Filter products based on the query
-        const filteredProducts = data.filter((product) =>
+        const filteredProducts = data.filter((product: Product) =>
           product.title.toLowerCase().includes(query.toLowerCase())
         );
         setProducts(filteredProducts);
@@ -64,3 +74,4 @@ export default function SearchBar({ onSearch }: SearchBarProps) {
     </div>
   );
 }
+
