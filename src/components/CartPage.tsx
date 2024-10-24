@@ -1,12 +1,11 @@
-// src/components/CartPage.tsx
+
 import { ChangeEvent } from "react";
 import { useCart } from "../hooks/useCart";
 import CartItem from "./CartItem";
 import { useState } from "react";
 
 export default function CartPage() {
-  const { cart, increaseQuantity, decreaseQuantity, removeFromCart } =
-    useCart();
+  const { cart, increaseQuantity, decreaseQuantity, removeFromCart } = useCart();
   const [isModalOpen, setModalOpen] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
@@ -14,69 +13,95 @@ export default function CartPage() {
     paymentMethod: "Credit Card",
   });
 
-  // const handleInputChange = (e) => {
-  //   const { name, value } = e.target;
-  //   setFormData({ ...formData, [name]: value });
-  // };
+  // Dynamic price details (initial values as 0)
+  const totalPrice = cart.length > 0 ? cart.reduce((total, item) => total + item.price * item.quantity, 0) : 0;
+  const discount = cart.length > 0 ? 0.1 * totalPrice : 0; // Example: 10% discount if cart has items
+  const platformFee = cart.length > 0 ? 3 : 0; // Platform fee is applicable only if there are items
+  const deliveryCharges = cart.length > 0 && totalPrice > 500 ? 0 : cart.length > 0 ? 50 : 0; // Delivery charges based on total price
+  const totalAmount = cart.length > 0 ? totalPrice - discount + platformFee + deliveryCharges : 0;
 
-  const handleInputChange = (
-    e: ChangeEvent<HTMLInputElement | HTMLSelectElement>
-  ) => {
+  const handleInputChange = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
   };
-// fixed handlesubmitproblem
+
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    // Handle submission logic here (e.g., API call)
     alert("Thank you for your purchase!");
     setModalOpen(false);
   };
 
   return (
-    <div className="max-w-3xl mx-auto p-6 bg-white rounded-xl shadow-xl transform transition-transform hover:scale-105">
-      <h2 className="text-3xl font-bold text-center mb-6">Shopping Cart</h2>
-      {cart.length === 0 ? (
-        <p className="text-center">
-          <span className="inline-block mb-2">
-            <img
-              src="https://cdn-icons-png.flaticon.com/128/11329/11329060.png"
-              alt="Empty Cart"
-              className="w-12 h-12 mx-auto"
-            />
-          </span>
-          Your cart is empty.
-        </p>
-      ) : (
-        <>
-          <ul className="divide-y divide-gray-300">
-            {cart.map((item) => (
-              <li key={item.id} className="py-4">
-                <CartItem
-                  item={item}
-                  increaseQuantity={increaseQuantity}
-                  decreaseQuantity={decreaseQuantity}
-                  removeFromCart={removeFromCart}
-                />
-              </li>
-            ))}
-          </ul>
-          <div className="mt-4">
-            <h3 className="text-lg font-bold">
-              Total: $
-              {cart
-                .reduce((total, item) => total + item.price * item.quantity, 0)
-                .toFixed(2)}
-            </h3>
-          </div>
-          <button
-            onClick={() => setModalOpen(true)}
-            className="mt-4 w-full p-3 text-white bg-blue-600 rounded-lg shadow hover:bg-blue-700 transition-colors"
-          >
-            Checkout
-          </button>
-        </>
-      )}
+    <div className="flex flex-col lg:flex-row justify-between p-6 bg-gray-50">
+      {/* Left Section */}
+      <div className="w-full lg:w-2/3 p-4 bg-white shadow-md rounded-lg mb-6 lg:mb-0">
+        <h2 className="text-2xl font-bold mb-6">Shopping Cart</h2>
+        {cart.length === 0 ? (
+          <p className="text-center">
+            <span className="inline-block mb-2">
+              <img
+                src="https://cdn-icons-png.flaticon.com/128/11329/11329060.png"
+                alt="Empty Cart"
+                className="w-12 h-12 mx-auto"
+              />
+            </span>
+            Your cart is empty.
+          </p>
+        ) : (
+          <>
+            <ul className="divide-y divide-gray-300">
+              {cart.map((item) => (
+                <li key={item.id} className="py-4">
+                  <CartItem
+                    item={item}
+                    increaseQuantity={increaseQuantity}
+                    decreaseQuantity={decreaseQuantity}
+                    removeFromCart={removeFromCart}
+                  />
+                </li>
+              ))}
+            </ul>
+            <div className="mt-4">
+              <button
+                onClick={() => setModalOpen(true)}
+                className="w-full p-3 text-white bg-orange-600 rounded-lg shadow hover:bg-orange-700 transition-colors"
+              >
+                Place Order
+              </button>
+            </div>
+          </>
+        )}
+      </div>
+
+      {/* Right Section: Price Details */}
+      <div className="ml-4 w-full lg:w-1/3 p-4 bg-white shadow-md rounded-lg">
+        <h3 className="text-xl font-bold mb-4">PRICE DETAILS</h3>
+        <div className="flex justify-between">
+          <span>Price ({cart.length} item{cart.length > 1 ? "s" : ""})</span>
+          <span>₹{totalPrice.toFixed(2)}</span>
+        </div>
+        <div className={`flex justify-between ${discount > 0 ? "text-green-600" : ""}`}>
+          <span>Discount</span>
+          <span>- ₹{discount.toFixed(2)}</span>
+        </div>
+        <div className="flex justify-between">
+          <span>Platform Fee</span>
+          <span>₹{platformFee}</span>
+        </div>
+        <div className={`flex justify-between ${deliveryCharges === 0 ? "line-through text-gray-400" : ""}`}>
+          <span>Delivery Charges</span>
+          <span>₹{deliveryCharges}</span>
+        </div>
+        <div className="flex justify-between font-bold text-lg mt-2">
+          <span>Total Amount</span>
+          <span>₹{totalAmount.toFixed(2)}</span>
+        </div>
+        {cart.length > 0 && (
+          <p className="text-green-600 text-sm mt-2">
+            You will save ₹{discount.toFixed(2)} on this order
+          </p>
+        )}
+      </div>
 
       {/* Checkout Modal */}
       {isModalOpen && (
@@ -141,3 +166,5 @@ export default function CartPage() {
     </div>
   );
 }
+
+
